@@ -4,7 +4,7 @@ const DB_CONFIG = {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     useCreateIndex: true,
-    useFindAndModify: true,
+    useFindAndModify: false,
     dbName: "ec021_2020_2_aulas",
 };
 

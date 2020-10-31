@@ -5,67 +5,68 @@ module.exports = {
         console.log("Executando rota POST");
         let { lote, conteudo, validade } = req.body;
 
-        let resposta = await Toddy.create({ lote, conteudo, validade });
+        try {
+            let resposta = await Toddy.create({ lote, conteudo, validade });
 
-        return res.json(201, resposta);
+            return res.json(201, resposta);
+        } catch (error) {
+            return res.json(400, { error: "Erro ao criar Toddy" });
+        }
     },
-    update: (req, res) => {
+    update: async (req, res) => {
         console.log("Executando rota PATCH");
         let { id } = req.params;
         let { lote, conteudo, validade } = req.body;
 
-        let resposta = {
-            id,
-            lote,
-            conteudo,
-            validade,
-        };
+        try {
+            const resposta = await Toddy.findByIdAndUpdate(
+                id,
+                {
+                    lote,
+                    conteudo,
+                    validade,
+                },
+                { new: true }
+            );
 
-        return res.json(200, resposta);
+            return res.json(200, resposta);
+        } catch (error) {
+            return res.json(400, { error: "Erro ao atualizar Toddy" });
+        }
     },
-    search: (req, res) => {
+    search: async (req, res) => {
         console.log("Executando rota GET");
         let { id } = req.query;
 
         let resposta;
         if (id) {
             // Buscar por id
-            resposta = {
-                id: "1",
-                lote: "X1A",
-                conteudo: "200",
-                validade: "17/11/2020",
-            };
+            try {
+                resposta = await Toddy.findById(id);
+            } catch (error) {
+                return res.json(404, { error: "Toddy não encontrado" });
+            }
         } else {
             // Buscar todos
-            resposta = [
-                {
-                    id: "1",
-                    lote: "X1A",
-                    conteudo: "200",
-                    validade: "17/11/2020",
-                },
-                {
-                    id: "2",
-                    lote: "X1A",
-                    conteudo: "200",
-                    validade: "17/11/2020",
-                },
-                {
-                    id: "3",
-                    lote: "X1A",
-                    conteudo: "200",
-                    validade: "17/11/2020",
-                },
-            ];
+            try {
+                resposta = await Toddy.find({});
+            } catch (error) {
+                return res.json(404, { error: "Erro ao buscar Toddies" });
+            }
         }
 
         return res.json(200, resposta);
     },
-    remove: (req, res) => {
+    remove: async (req, res) => {
         console.log("Executando rota DELETE");
         let { id } = req.params;
 
-        return res.send(204);
+        try {
+            await Toddy.findByIdAndRemove(id);
+
+            return res.send(204);
+        } catch (error) {
+            return res.json(400, { error: "Erro ao deletar Toddy" });
+        }
     },
 };
