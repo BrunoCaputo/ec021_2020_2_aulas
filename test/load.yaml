@@ -1,0 +1,46 @@
+config:
+    target: "http://localhost:3000/api/v1"
+    processor: "./processor.js"
+    phases:
+        - duration: 10
+          arrivalRate: 10
+          name: Aquecimento
+
+        - duration: 15
+          arrivalRate: 10
+          rampTo: 100
+          name: Aumento de carga
+
+        - duration: 20
+          arrivalRate: 100
+          name: Carga alta
+scenarios:
+    - name: "Load test"
+      flow:
+          - post:
+                beforeRequest: createBody
+                url: "/toddy"
+                headers:
+                    token: "sdgfsdg"
+                json: "{{createJson}}"
+                capture:
+                    json: "$._id"
+                    as: "toddyId"
+          - patch:
+                beforeRequest: updateBody
+                url: "/toddy/{{toddyId}}"
+                headers:
+                    token: "sdgfsdg"
+                json: "{{updateJson}}"
+          - get:
+                url: "/toddy"
+                headers:
+                    token: "iughiugiu"
+          - get:
+                url: "/toddy?id={{toddyId}}"
+                headers:
+                    token: "iughiugiu"
+          - delete:
+                url: "/toddy/{{toddyId}}"
+                headers:
+                    token: "sdgfsdg"
